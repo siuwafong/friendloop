@@ -1,20 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import Navigation from './navigation';
+import useCachedResources from './hooks/useCachedResources';
+import useColorScheme from './hooks/useColorScheme';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { AuthContextProvider } from './screens/Welcome/hooks/AuthContext';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  const isLoadingComplete = useCachedResources();
+  const colorScheme = useColorScheme();
+
+  if (!isLoadingComplete) {
+    return null;
+  } else {
+    return (
+      <PaperProvider>
+        <SafeAreaProvider>
+          <AuthContextProvider>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </AuthContextProvider>
+        </SafeAreaProvider>
+      </PaperProvider>
+    );
+  }
+}
